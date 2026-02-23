@@ -1,0 +1,24 @@
+/* ==========================================================================
+   PCIP Prep - Admin Styles
+   ========================================================================== */
+
+/* Status badges in list tables */
+.pcip-status-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.pcip-status-open {
+	background: #fff3cd;
+	color: #8a6d3b;
+}
+
+.pcip-status-resolved {
+	background: #d4edda;
+	color: #155724;
+}

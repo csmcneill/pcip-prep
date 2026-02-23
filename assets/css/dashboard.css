@@ -1,0 +1,148 @@
+/* ==========================================================================
+   PCIP Prep - Dashboard Styles
+   ========================================================================== */
+
+/* ---------- Overview Cards ---------- */
+.pcip-dash-overview {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 12px;
+	margin-bottom: 32px;
+}
+
+.pcip-dash-stat-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 20px;
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+}
+
+.pcip-dash-stat-value {
+	font-size: 28px;
+	font-weight: 700;
+	color: #0073aa;
+}
+
+.pcip-dash-stat-label {
+	font-size: 13px;
+	color: #757575;
+	font-weight: 500;
+	text-align: center;
+}
+
+/* ---------- Sections ---------- */
+.pcip-dash-section {
+	margin-bottom: 32px;
+}
+
+.pcip-dash-section h3 {
+	margin-bottom: 16px;
+}
+
+/* ---------- Progress Bars ---------- */
+.pcip-dash-domain-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.pcip-dash-bar-item {
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	padding: 12px 16px;
+}
+
+.pcip-dash-bar-label {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.pcip-dash-bar-detail {
+	font-size: 13px;
+	color: #757575;
+	font-weight: 400;
+}
+
+.pcip-dash-bar-track {
+	height: 8px;
+	background: #f0f0f0;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.pcip-dash-bar-fill {
+	height: 100%;
+	border-radius: 4px;
+	transition: width 0.5s ease;
+}
+
+.pcip-bar-pass {
+	background: #00a32a;
+}
+
+.pcip-bar-fail {
+	background: #d63638;
+}
+
+/* ---------- Weak Areas ---------- */
+.pcip-dash-weak-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pcip-dash-weak-item {
+	display: inline-block;
+	padding: 6px 14px;
+	background: #fff8f0;
+	border: 1px solid #f0d0a0;
+	border-radius: 20px;
+	font-size: 14px;
+	color: #8a6d3b;
+}
+
+/* ---------- History Tables ---------- */
+.pcip-dash-history-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: #fff;
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid #e0e0e0;
+}
+
+.pcip-dash-history-table th,
+.pcip-dash-history-table td {
+	padding: 10px 14px;
+	text-align: left;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.pcip-dash-history-table th {
+	font-weight: 600;
+	font-size: 13px;
+	color: #757575;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	background: #fafafa;
+}
+
+.pcip-dash-history-table td {
+	font-size: 14px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+	.pcip-dash-overview {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

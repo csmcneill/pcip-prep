@@ -1,0 +1,978 @@
+/* ==========================================================================
+   PCIP Prep - Frontend Styles
+   ========================================================================== */
+
+/* ---------- Reset & Container ---------- */
+.pcip-container {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+	color: #1e1e1e;
+	line-height: 1.6;
+}
+
+.pcip-container *,
+.pcip-container *::before,
+.pcip-container *::after {
+	box-sizing: border-box;
+}
+
+.pcip-section {
+	animation: pciFadeIn 0.2s ease;
+}
+
+@keyframes pciFadeIn {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.pcip-subtitle {
+	color: #606060;
+	margin-bottom: 24px;
+}
+
+.pcip-login-prompt {
+	text-align: center;
+	padding: 48px 24px;
+	max-width: 440px;
+	margin: 0 auto;
+}
+
+.pcip-login-prompt p {
+	font-size: 17px;
+	color: #404040;
+	margin: 0 0 20px;
+}
+
+/* ---------- Buttons ---------- */
+.pcip-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 6px;
+	font-size: 15px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-decoration: none;
+}
+
+.pcip-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.pcip-btn-primary {
+	background: #0073aa;
+	color: #fff;
+}
+.pcip-btn-primary:hover:not(:disabled) {
+	background: #005d8c;
+}
+
+.pcip-btn-secondary {
+	background: #f0f0f0;
+	color: #1e1e1e;
+}
+.pcip-btn-secondary:hover:not(:disabled) {
+	background: #e0e0e0;
+}
+
+.pcip-btn-accent {
+	background: #d63638;
+	color: #fff;
+}
+.pcip-btn-accent:hover:not(:disabled) {
+	background: #b32d2e;
+}
+
+.pcip-btn-link {
+	background: none;
+	color: #0073aa;
+	padding: 10px 8px;
+	font-size: 13px;
+}
+.pcip-btn-link:hover {
+	text-decoration: underline;
+}
+
+.pcip-btn-full {
+	width: 100%;
+	justify-content: center;
+}
+
+.pcip-btn-large {
+	padding: 14px 32px;
+	font-size: 17px;
+}
+
+/* ---------- Domain Selection Grid ---------- */
+.pcip-domain-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 12px;
+}
+
+.pcip-domain-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+	padding: 20px;
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-align: left;
+	width: 100%;
+}
+
+.pcip-domain-card:hover {
+	border-color: #0073aa;
+	box-shadow: 0 2px 8px rgba(0, 115, 170, 0.12);
+}
+
+.pcip-domain-number {
+	font-size: 28px;
+	font-weight: 700;
+	color: #0073aa;
+}
+
+.pcip-domain-name {
+	font-size: 15px;
+	font-weight: 600;
+}
+
+.pcip-domain-count {
+	font-size: 13px;
+	color: #757575;
+}
+
+.pcip-domain-expand-hint {
+	font-size: 12px;
+	color: #999;
+}
+
+/* Requirements sub-grid */
+.pcip-requirements-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 8px;
+	grid-column: 1 / -1;
+	padding: 4px 0;
+}
+
+.pcip-req-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	padding: 12px;
+	background: #f7f9fc;
+	border: 2px solid #d0d5dd;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.pcip-req-card:hover {
+	border-color: #0073aa;
+	background: #eef5fa;
+}
+
+.pcip-req-number {
+	font-size: 20px;
+	font-weight: 700;
+	color: #0073aa;
+}
+
+.pcip-req-name {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.pcip-req-all {
+	background: #0073aa;
+	border-color: #0073aa;
+	color: #fff;
+}
+.pcip-req-all:hover {
+	background: #005d8c;
+}
+.pcip-req-all .pcip-req-name,
+.pcip-req-all .pcip-domain-count {
+	color: #fff;
+}
+
+/* ---------- Quiz Length Options ---------- */
+.pcip-length-options {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin-top: 16px;
+}
+
+.pcip-length-btn {
+	min-width: 140px;
+	justify-content: center;
+}
+
+/* ---------- Flashcard ---------- */
+.pcip-fc-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.pcip-counter {
+	font-size: 14px;
+	color: #757575;
+	font-weight: 500;
+}
+
+.pcip-flashcard {
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	border-radius: 12px;
+	padding: 32px;
+	min-height: 200px;
+}
+
+.pcip-fc-question p {
+	font-size: 18px;
+	line-height: 1.6;
+	margin: 0 0 12px;
+}
+
+.pcip-reference {
+	display: block;
+	font-size: 13px;
+	color: #999;
+	margin-bottom: 16px;
+}
+
+.pcip-fc-answer {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 2px solid #0073aa;
+}
+
+.pcip-fc-answer p {
+	font-size: 16px;
+	line-height: 1.6;
+	color: #1a4f6e;
+	margin: 0;
+}
+
+.pcip-fc-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 20px;
+}
+
+/* ---------- Quiz Question ---------- */
+.pcip-prep-header {
+	margin-bottom: 20px;
+}
+
+.pcip-progress-bar {
+	height: 6px;
+	background: #e0e0e0;
+	border-radius: 3px;
+	margin-top: 8px;
+	overflow: hidden;
+}
+
+.pcip-progress-fill {
+	height: 100%;
+	background: #0073aa;
+	border-radius: 3px;
+	transition: width 0.3s ease;
+}
+
+.pcip-question-card {
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	border-radius: 12px;
+	padding: 28px;
+}
+
+.pcip-question-text {
+	font-size: 18px;
+	line-height: 1.6;
+	margin: 0 0 24px;
+}
+
+/* ---------- Answer Options ---------- */
+.pcip-options-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.pcip-option-label {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 14px 16px;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.pcip-option-label:hover {
+	border-color: #0073aa;
+	background: #f7f9fc;
+}
+
+.pcip-option-label input[type="radio"] {
+	margin-top: 3px;
+	flex-shrink: 0;
+}
+
+.pcip-option-text {
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.pcip-option-correct {
+	border-color: #00a32a !important;
+	background: #edfaef !important;
+}
+
+.pcip-option-incorrect {
+	border-color: #d63638 !important;
+	background: #fceaea !important;
+}
+
+/* ---------- Feedback ---------- */
+.pcip-feedback {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 2px solid #e0e0e0;
+}
+
+.pcip-feedback-result {
+	font-size: 20px;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.pcip-correct {
+	color: #00a32a;
+}
+
+.pcip-incorrect {
+	color: #d63638;
+}
+
+.pcip-explanation {
+	font-size: 15px;
+	color: #404040;
+	line-height: 1.6;
+	margin-bottom: 16px;
+}
+
+.pcip-prep-feedback-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* ---------- Score Display ---------- */
+.pcip-results-card {
+	text-align: center;
+	padding: 32px;
+}
+
+.pcip-score-display {
+	margin: 24px 0;
+}
+
+.pcip-score-circle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	border: 6px solid #e0e0e0;
+	margin-bottom: 12px;
+}
+
+.pcip-score-pass {
+	border-color: #00a32a;
+}
+
+.pcip-score-fail {
+	border-color: #d63638;
+}
+
+.pcip-score-percent {
+	font-size: 32px;
+	font-weight: 700;
+}
+
+.pcip-score-pass .pcip-score-percent {
+	color: #00a32a;
+}
+
+.pcip-score-fail .pcip-score-percent {
+	color: #d63638;
+}
+
+.pcip-score-detail {
+	font-size: 16px;
+	color: #606060;
+}
+
+.pcip-time-spent {
+	font-size: 14px;
+	color: #999;
+}
+
+.pcip-results-actions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 24px;
+}
+
+/* ---------- Exam Splash ---------- */
+.pcip-exam-splash-card {
+	text-align: center;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.pcip-exam-details {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+	margin: 28px 0;
+}
+
+.pcip-exam-detail {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 16px;
+	background: #f7f9fc;
+	border-radius: 8px;
+}
+
+.pcip-detail-label {
+	font-size: 13px;
+	color: #757575;
+	font-weight: 500;
+}
+
+.pcip-detail-value {
+	font-size: 22px;
+	font-weight: 700;
+	color: #0073aa;
+}
+
+.pcip-exam-notice {
+	padding: 16px;
+	background: #f0f6fc;
+	border: 1px solid #c3d9ed;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	text-align: left;
+}
+
+.pcip-notice-warning {
+	background: #fcf0e3;
+	border-color: #e0b878;
+	color: #8a6d3b;
+}
+
+/* ---------- Exam Interface ---------- */
+.pcip-exam-layout {
+	display: flex;
+	gap: 24px;
+}
+
+.pcip-exam-main {
+	flex: 1;
+	min-width: 0;
+}
+
+.pcip-exam-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	background: #1e1e1e;
+	color: #fff;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.pcip-exam-timer {
+	font-size: 20px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+
+.pcip-timer-warning {
+	color: #ff6b6b;
+	animation: pciPulse 1s ease-in-out infinite;
+}
+
+@keyframes pciPulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.5; }
+}
+
+.pcip-exam-question-area {
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	border-radius: 12px;
+	padding: 28px;
+	margin-bottom: 16px;
+}
+
+.pcip-exam-question-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.pcip-flag-btn {
+	gap: 6px;
+}
+
+.pcip-flag-icon {
+	font-size: 16px;
+}
+
+.pcip-flagged {
+	background: #fff3cd;
+	border-color: #e0b878;
+	color: #8a6d3b;
+}
+
+.pcip-exam-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+/* ---------- Exam Sidebar (Question Grid) ---------- */
+.pcip-exam-sidebar {
+	width: 220px;
+	flex-shrink: 0;
+}
+
+.pcip-exam-sidebar-header {
+	margin-bottom: 12px;
+}
+
+.pcip-exam-sidebar-header h4 {
+	margin: 0 0 4px;
+}
+
+.pcip-exam-question-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 4px;
+}
+
+.pcip-grid-btn {
+	width: 38px;
+	height: 38px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid #d0d5dd;
+	border-radius: 6px;
+	background: #fff;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.1s ease;
+}
+
+.pcip-grid-btn:hover {
+	border-color: #0073aa;
+}
+
+.pcip-grid-current {
+	border-color: #0073aa;
+	box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.25);
+}
+
+.pcip-grid-answered {
+	background: #00a32a;
+	border-color: #00a32a;
+	color: #fff;
+}
+
+.pcip-grid-flagged {
+	background: #ffb900;
+	border-color: #e0a800;
+	color: #fff;
+}
+
+.pcip-exam-grid-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 12px;
+	font-size: 12px;
+	color: #757575;
+}
+
+.pcip-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.pcip-legend-dot {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	border: 1px solid #d0d5dd;
+}
+
+.pcip-status-answered { background: #00a32a; border-color: #00a32a; }
+.pcip-status-flagged  { background: #ffb900; border-color: #e0a800; }
+.pcip-status-unanswered { background: #fff; }
+
+.pcip-exam-sidebar-toggle-btn {
+	display: none;
+	width: 100%;
+	margin-top: 12px;
+}
+
+/* ---------- Review Screen ---------- */
+.pcip-review-card {
+	text-align: center;
+}
+
+.pcip-review-summary {
+	display: flex;
+	gap: 24px;
+	justify-content: center;
+	margin: 24px 0;
+}
+
+.pcip-review-stat {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+
+.pcip-review-stat-value {
+	font-size: 32px;
+	font-weight: 700;
+}
+
+.pcip-review-stat-label {
+	font-size: 14px;
+	color: #757575;
+}
+
+.pcip-review-grid {
+	max-width: 400px;
+	margin: 0 auto 24px;
+}
+
+.pcip-review-actions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}
+
+/* ---------- Exam Results ---------- */
+.pcip-result-banner {
+	padding: 16px;
+	border-radius: 8px;
+	margin-bottom: 24px;
+}
+
+.pcip-result-pass {
+	background: #edfaef;
+	color: #00a32a;
+}
+
+.pcip-result-fail {
+	background: #fceaea;
+	color: #d63638;
+}
+
+.pcip-result-banner h2 {
+	margin: 0;
+	font-size: 28px;
+}
+
+.pcip-breakdown-section {
+	margin-top: 32px;
+	text-align: left;
+}
+
+.pcip-breakdown-section h3 {
+	margin-bottom: 12px;
+}
+
+.pcip-breakdown-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.pcip-breakdown-table th,
+.pcip-breakdown-table td {
+	padding: 10px 14px;
+	border-bottom: 1px solid #e0e0e0;
+	text-align: left;
+}
+
+.pcip-breakdown-table th {
+	font-weight: 600;
+	font-size: 13px;
+	color: #757575;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.pcip-row-weak {
+	background: #fff8f0;
+}
+
+.pcip-row-weak td:last-child {
+	color: #d63638;
+	font-weight: 600;
+}
+
+/* Answer review */
+.pcip-answer-review-section {
+	text-align: left;
+	margin-top: 32px;
+}
+
+.pcip-answer-review-item {
+	padding: 16px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	margin-bottom: 12px;
+}
+
+.pcip-review-correct {
+	border-left: 4px solid #00a32a;
+}
+
+.pcip-review-incorrect {
+	border-left: 4px solid #d63638;
+}
+
+.pcip-review-q {
+	margin: 0 0 8px;
+	font-size: 15px;
+}
+
+.pcip-review-opt {
+	margin: 4px 0;
+	padding-left: 16px;
+	font-size: 14px;
+	color: #404040;
+}
+
+.pcip-review-explanation {
+	margin-top: 8px;
+	font-size: 14px;
+	color: #606060;
+}
+
+/* ---------- Modal ---------- */
+.pcip-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.pcip-modal-backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.pcip-modal-content {
+	position: relative;
+	background: #fff;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 500px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.pcip-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.pcip-modal-header h3 {
+	margin: 0;
+}
+
+.pcip-modal-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	color: #757575;
+	padding: 0;
+	line-height: 1;
+}
+
+.pcip-modal-body {
+	padding: 20px;
+}
+
+.pcip-form-field {
+	margin-bottom: 16px;
+}
+
+.pcip-form-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 6px;
+	font-size: 14px;
+}
+
+.pcip-form-field textarea {
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #d0d5dd;
+	border-radius: 6px;
+	font-family: inherit;
+	font-size: 14px;
+	resize: vertical;
+}
+
+.pcip-modal-footer {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	margin-top: 8px;
+}
+
+.pcip-success-message {
+	color: #00a32a;
+	font-weight: 500;
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+/* ---------- Empty State ---------- */
+.pcip-empty-state {
+	text-align: center;
+	padding: 40px 20px;
+	color: #757575;
+}
+
+.pcip-loading {
+	text-align: center;
+	padding: 40px 20px;
+	color: #757575;
+}
+
+/* ---------- Status Badges ---------- */
+.pcip-status-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.pcip-status-pass {
+	background: #edfaef;
+	color: #00a32a;
+}
+
+.pcip-status-fail {
+	background: #fceaea;
+	color: #d63638;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+	.pcip-exam-layout {
+		flex-direction: column;
+	}
+
+	.pcip-exam-sidebar {
+		width: 100%;
+		order: -1;
+	}
+
+	.pcip-exam-sidebar .pcip-exam-sidebar-header,
+	.pcip-exam-sidebar .pcip-exam-question-grid,
+	.pcip-exam-sidebar .pcip-exam-grid-legend {
+		display: none;
+	}
+
+	.pcip-exam-sidebar.pcip-sidebar-open .pcip-exam-sidebar-header,
+	.pcip-exam-sidebar.pcip-sidebar-open .pcip-exam-question-grid,
+	.pcip-exam-sidebar.pcip-sidebar-open .pcip-exam-grid-legend {
+		display: block;
+	}
+
+	.pcip-exam-sidebar.pcip-sidebar-open .pcip-exam-question-grid {
+		display: grid;
+	}
+
+	.pcip-exam-sidebar-toggle-btn {
+		display: block;
+	}
+
+	.pcip-exam-details {
+		grid-template-columns: 1fr;
+	}
+
+	.pcip-review-summary {
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.pcip-domain-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.pcip-requirements-grid {
+		grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	}
+}
