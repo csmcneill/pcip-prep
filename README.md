@@ -39,7 +39,7 @@ Page slugs and hierarchy don't matter — the plugin is entirely shortcode-drive
 
 The plugin ships with starter CSV files in the `data/` directory:
 
-- `data/mc-questions.csv` — ~140 multiple-choice questions across all 5 PCIP domains
+- `data/mc-questions.csv` — ~200 multiple-choice questions across all 5 PCIP domains
 - `data/flashcards.csv` — ~80 flashcards covering key definitions, thresholds, and concepts
 
 To import, go to **PCIP Prep > CSV Import/Export** in the WordPress admin, select the question type, and upload the file. The importer uses upsert logic — matching questions (by text and type) are updated rather than duplicated, so re-importing is safe.
