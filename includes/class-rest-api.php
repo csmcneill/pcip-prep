@@ -45,6 +45,13 @@ class PCIP_Prep_REST_API {
 			'permission_callback' => array( $this, 'check_logged_in' ),
 		) );
 
+		// Check available question count (public, cache-safe).
+		register_rest_route( self::NAMESPACE, '/exam/available', array(
+			'methods'             => 'GET',
+			'callback'            => array( $this, 'get_exam_available' ),
+			'permission_callback' => '__return_true',
+		) );
+
 		// Start a full PCIP prep exam.
 		register_rest_route( self::NAMESPACE, '/exam/start', array(
 			'methods'             => 'POST',
@@ -94,11 +101,14 @@ class PCIP_Prep_REST_API {
 		$domain      = $request->get_param( 'domain' );
 		$requirement = $request->get_param( 'requirement' );
 
+		self::swap_tables();
+
 		$args = array(
-			'post_type'      => 'pcip_question',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => array(
+			'post_type'        => 'pcip_question',
+			'post_status'      => 'publish',
+			'posts_per_page'   => -1,
+			'suppress_filters' => true,
+			'meta_query'       => array(
 				array(
 					'key'   => '_pcip_question_type',
 					'value' => $type,
@@ -139,6 +149,8 @@ class PCIP_Prep_REST_API {
 			$questions[] = $q;
 		}
 
+		self::restore_tables();
+
 		// Shuffle for flashcards.
 		shuffle( $questions );
 
@@ -155,19 +167,22 @@ class PCIP_Prep_REST_API {
 		$count       = absint( $request->get_param( 'count' ) );
 		$user_id     = get_current_user_id();
 
+		self::swap_tables();
+
 		// Build query.
 		$tax_term = $requirement ?: $domain;
 		$args     = array(
-			'post_type'      => 'pcip_question',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => array(
+			'post_type'        => 'pcip_question',
+			'post_status'      => 'publish',
+			'posts_per_page'   => -1,
+			'suppress_filters' => true,
+			'meta_query'       => array(
 				array(
 					'key'   => '_pcip_question_type',
 					'value' => 'multiple_choice',
 				),
 			),
-			'tax_query'      => array(
+			'tax_query'        => array(
 				array(
 					'taxonomy' => 'pcip_domain',
 					'field'    => 'slug',
@@ -180,6 +195,7 @@ class PCIP_Prep_REST_API {
 		$posts = $query->posts;
 
 		if ( empty( $posts ) ) {
+			self::restore_tables();
 			return new WP_Error( 'no_questions', 'No questions found for this domain.', array( 'status' => 404 ) );
 		}
 
@@ -198,6 +214,8 @@ class PCIP_Prep_REST_API {
 			$questions[] = $prepared['client'];
 			$answer_key[ $index + 1 ] = $prepared['server'];
 		}
+
+		self::restore_tables();
 
 		// Store session in user meta.
 		$session = array(
@@ -310,6 +328,36 @@ class PCIP_Prep_REST_API {
 	// Full PCIP exam
 	// ------------------------------------------------------------------
 
+	public function get_exam_available() {
+		global $wpdb;
+
+		// Use the detected prefix for a direct SQL count — bypasses all
+		// REST filters and mu-plugin interference.
+		$prefix = self::detect_prefix();
+		$posts_table = $prefix . 'posts';
+		$meta_table  = $prefix . 'postmeta';
+
+		$count = (int) $wpdb->get_var( $wpdb->prepare(
+			"SELECT COUNT(DISTINCT p.ID)
+			 FROM `{$posts_table}` p
+			 INNER JOIN `{$meta_table}` pm ON p.ID = pm.post_id
+			 WHERE p.post_type = %s
+			   AND p.post_status = %s
+			   AND pm.meta_key = %s
+			   AND pm.meta_value = %s",
+			'pcip_question',
+			'publish',
+			'_pcip_question_type',
+			'multiple_choice'
+		) );
+
+		return rest_ensure_response( array(
+			'available'      => $count,
+			'prefix_used'    => $prefix,
+			'plugin_version' => PCIP_PREP_VERSION,
+		) );
+	}
+
 	public function start_exam( $request ) {
 		$user_id = get_current_user_id();
 
@@ -327,12 +375,15 @@ class PCIP_Prep_REST_API {
 			}
 		}
 
-		// Get all MC questions.
+		// Get all MC questions (with table prefix fix).
+		self::swap_tables();
+
 		$args = array(
-			'post_type'      => 'pcip_question',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'meta_query'     => array(
+			'post_type'        => 'pcip_question',
+			'post_status'      => 'publish',
+			'posts_per_page'   => -1,
+			'suppress_filters' => true,
+			'meta_query'       => array(
 				array(
 					'key'   => '_pcip_question_type',
 					'value' => 'multiple_choice',
@@ -345,6 +396,7 @@ class PCIP_Prep_REST_API {
 
 		$exam_size = 75;
 		if ( count( $posts ) < $exam_size ) {
+			self::restore_tables();
 			return new WP_Error(
 				'insufficient_questions',
 				sprintf( 'Need at least %d questions for a full exam. Only %d available.', $exam_size, count( $posts ) ),
@@ -364,6 +416,8 @@ class PCIP_Prep_REST_API {
 			$questions[] = $prepared['client'];
 			$answer_key[ $index + 1 ] = $prepared['server'];
 		}
+
+		self::restore_tables();
 
 		$session = array(
 			'session_id' => $session_id,
@@ -533,6 +587,95 @@ class PCIP_Prep_REST_API {
 			'success'   => true,
 			'report_id' => $post_id,
 		) );
+	}
+
+	// ------------------------------------------------------------------
+	// Table prefix fix (WordPress.com)
+	// ------------------------------------------------------------------
+
+	/**
+	 * On WordPress.com hosted sites the $wpdb->prefix visible in
+	 * REST / frontend contexts can differ from the prefix that actually
+	 * holds plugin data.  detect_prefix() resolves the correct one by
+	 * trying candidates in order and verifying each with a COUNT query.
+	 *
+	 * swap_tables() / restore_tables() temporarily redirect $wpdb so
+	 * that WP_Query, get_post_meta(), wp_get_object_terms() etc. all
+	 * hit the right tables.
+	 */
+	private static $real_prefix  = null;
+	private static $saved_tables = null;
+
+	private static function detect_prefix() {
+		if ( self::$real_prefix !== null ) {
+			return self::$real_prefix;
+		}
+
+		global $wpdb;
+
+		// Build an ordered list of candidate prefixes.
+		$candidates = array( $wpdb->prefix );
+
+		// get_blog_prefix() may differ on multisite.
+		if ( function_exists( 'get_blog_prefix' ) ) {
+			$blog_prefix = get_blog_prefix();
+			if ( $blog_prefix !== $wpdb->prefix ) {
+				$candidates[] = $blog_prefix;
+			}
+		}
+
+		// WordPress.com sometimes uses a double-underscore prefix.
+		if ( ! in_array( '__wp_', $candidates, true ) ) {
+			$candidates[] = '__wp_';
+		}
+
+		foreach ( $candidates as $prefix ) {
+			$table = $prefix . 'posts';
+			// Suppress errors in case the table doesn't exist.
+			$count = $wpdb->get_var(
+				"SELECT COUNT(*) FROM `{$table}` WHERE post_type = 'pcip_question' LIMIT 1"
+			);
+			if ( $count && (int) $count > 0 ) {
+				self::$real_prefix = $prefix;
+				return self::$real_prefix;
+			}
+		}
+
+		// No candidate had rows — do not guess.  Use the default prefix
+		// and let WP_Query (with suppress_filters) handle it normally.
+		self::$real_prefix = $wpdb->prefix;
+		return self::$real_prefix;
+	}
+
+	private static function swap_tables() {
+		global $wpdb;
+		$real = self::detect_prefix();
+
+		if ( $real === $wpdb->prefix ) {
+			self::$saved_tables = null;
+			return;
+		}
+
+		$tables = array( 'posts', 'postmeta', 'terms', 'term_taxonomy', 'term_relationships', 'termmeta' );
+		self::$saved_tables = array( 'prefix' => $wpdb->prefix );
+		foreach ( $tables as $t ) {
+			self::$saved_tables[ $t ] = $wpdb->$t;
+			$wpdb->$t = $real . $t;
+		}
+		$wpdb->prefix = $real;
+	}
+
+	private static function restore_tables() {
+		if ( self::$saved_tables === null ) {
+			return;
+		}
+		global $wpdb;
+		$wpdb->prefix = self::$saved_tables['prefix'];
+		unset( self::$saved_tables['prefix'] );
+		foreach ( self::$saved_tables as $t => $orig ) {
+			$wpdb->$t = $orig;
+		}
+		self::$saved_tables = null;
 	}
 
 	// ------------------------------------------------------------------

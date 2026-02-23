@@ -14,33 +14,30 @@ class PCIP_Prep_Exam {
 		wp_enqueue_script( 'pcip-prep-exam-engine', PCIP_PREP_PLUGIN_URL . 'assets/js/exam-engine.js', array(), PCIP_PREP_VERSION, true );
 		wp_enqueue_script( 'pcip-prep-issue-report', PCIP_PREP_PLUGIN_URL . 'assets/js/issue-report.js', array(), PCIP_PREP_VERSION, true );
 
-		// Count total MC questions to check if exam is possible.
-		$mc_count = new WP_Query( array(
-			'post_type'      => 'pcip_question',
-			'post_status'    => 'publish',
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'meta_query'     => array(
-				array(
-					'key'   => '_pcip_question_type',
-					'value' => 'multiple_choice',
-				),
-			),
-		) );
-
+		// Don't bake a question count into the page HTML — WordPress.com edge
+		// caching would serve a stale value, and the $wpdb table prefix
+		// doesn't match the actual data tables on this host.  Instead, the
+		// JS fetches the live count from the REST API on page load.
 		wp_localize_script( 'pcip-prep-exam-engine', 'pcipExamData', array(
 			'restUrl'        => esc_url_raw( rest_url( 'pcip-prep/v1' ) ),
 			'nonce'          => wp_create_nonce( 'wp_rest' ),
-			'totalAvailable' => $mc_count->found_posts,
+			'totalAvailable' => -1, // sentinel: JS must fetch live count
 			'examSize'       => 75,
 			'duration'       => 90,
 			'passPercent'    => 75,
+			'pluginVersion'  => PCIP_PREP_VERSION,
 		) );
 
 		wp_localize_script( 'pcip-prep-issue-report', 'pcipIssueData', array(
 			'restUrl' => esc_url_raw( rest_url( 'pcip-prep/v1' ) ),
 			'nonce'   => wp_create_nonce( 'wp_rest' ),
 		) );
+
+		// Tell browsers and edge caches not to cache this page.
+		if ( ! headers_sent() ) {
+			header( 'Cache-Control: no-cache, no-store, must-revalidate' );
+			header( 'Pragma: no-cache' );
+		}
 
 		ob_start();
 		include PCIP_PREP_PLUGIN_DIR . 'templates/exam-splash.php';

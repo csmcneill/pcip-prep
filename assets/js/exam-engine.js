@@ -24,10 +24,35 @@
 
 	if (!splash) return;
 
-	// Check if enough questions.
-	if (typeof pcipExamData !== 'undefined' && pcipExamData.totalAvailable < pcipExamData.examSize) {
-		document.getElementById('pcip-exam-insufficient').style.display = 'block';
+	// Always fetch the live question count from the REST API.
+	// The baked-in totalAvailable is a sentinel (-1) because WordPress.com
+	// edge caching and table-prefix mismatches make it unreliable.
+	if (typeof pcipExamData !== 'undefined') {
 		document.getElementById('pcip-exam-begin').disabled = true;
+		document.getElementById('pcip-exam-begin').textContent = 'Checking questions...';
+
+		fetch(pcipExamData.restUrl + '/exam/available?_=' + Date.now(), {
+			cache: 'no-store'
+		})
+		.then(function (res) { return res.json(); })
+		.then(function (data) {
+			if (data && typeof data.available === 'number') {
+				if (data.available >= parseInt(pcipExamData.examSize)) {
+					document.getElementById('pcip-exam-insufficient').style.display = 'none';
+					document.getElementById('pcip-exam-begin').disabled = false;
+					document.getElementById('pcip-exam-begin').textContent = 'Begin Exam';
+				} else {
+					document.getElementById('pcip-exam-insufficient').style.display = 'block';
+					document.getElementById('pcip-exam-begin').disabled = true;
+					document.getElementById('pcip-exam-begin').textContent = 'Begin Exam';
+				}
+			}
+		})
+		.catch(function () {
+			// REST API unreachable — let user try anyway.
+			document.getElementById('pcip-exam-begin').disabled = false;
+			document.getElementById('pcip-exam-begin').textContent = 'Begin Exam';
+		});
 	}
 
 	// Begin exam.
@@ -64,6 +89,15 @@
 		})
 		.then(function (data) {
 			if (!data) return;
+			if (data.code) {
+				// Server returned an error (e.g., insufficient_questions).
+				document.getElementById('pcip-exam-begin').disabled = false;
+				document.getElementById('pcip-exam-begin').textContent = 'Begin Exam';
+				document.getElementById('pcip-exam-insufficient').style.display = 'block';
+				document.getElementById('pcip-exam-insufficient').querySelector('p').textContent =
+					data.message || 'Could not start exam. Please try again.';
+				return;
+			}
 			initExam(data);
 		});
 	});
