@@ -53,8 +53,8 @@ question_text,option_a,option_b,option_c,option_d,correct_answer,explanation,dom
 ```
 
 - `correct_answer`: a, b, c, or d
-- `domain`: 1--5
-- `requirement`: 1--12 (required for Domain 3, optional otherwise)
+- `domain`: 1–5
+- `requirement`: 1–12 (required for Domain 3, optional otherwise)
 - `difficulty`: easy, medium, or hard
 
 **Flashcards:**
@@ -73,7 +73,7 @@ question_text,answer,domain,requirement,pcip_reference
 | 4 | Assessment and Validation | ~15% |
 | 5 | Compliance Programs and Operations | ~15% |
 
-Domain 3 is further broken down into Requirements 1--12, each mapped to a specific PCI DSS requirement.
+Domain 3 is further broken down into Requirements 1–12, each mapped to a specific PCI DSS requirement.
 
 ## REST API
 
