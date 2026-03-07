@@ -139,6 +139,33 @@ $domains = get_terms( array(
 			</p>
 		</div>
 	</div>
+
+	<!-- Settings Section -->
+	<div style="margin-top:24px;">
+		<?php settings_errors( 'pcip_settings' ); ?>
+		<div class="card" style="max-width:520px;">
+			<h2><?php esc_html_e( 'Settings', 'pcip-prep' ); ?></h2>
+			<form method="post">
+				<?php wp_nonce_field( 'pcip_save_settings', 'pcip_settings_nonce' ); ?>
+				<table class="form-table">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Uninstall Behavior', 'pcip-prep' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="pcip_delete_data_on_uninstall" value="1"
+									<?php checked( get_option( 'pcip_prep_delete_data_on_uninstall', false ) ); ?> />
+								<?php esc_html_e( 'Delete all data when plugin is deleted', 'pcip-prep' ); ?>
+							</label>
+							<p class="description">
+								<?php esc_html_e( 'When disabled (default), questions, quiz history, and domains are preserved if the plugin is removed. Enable this only if you want a full cleanup on deletion.', 'pcip-prep' ); ?>
+							</p>
+						</td>
+					</tr>
+				</table>
+				<?php submit_button( __( 'Save Settings', 'pcip-prep' ), 'secondary', 'pcip_save_settings' ); ?>
+			</form>
+		</div>
+	</div>
 </div>
 
 <script>

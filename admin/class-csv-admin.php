@@ -7,6 +7,26 @@ class PCIP_Prep_CSV_Admin {
 
 	public function init() {
 		add_action( 'admin_init', array( $this, 'handle_csv_actions' ) );
+		add_action( 'admin_init', array( $this, 'handle_settings_save' ) );
+	}
+
+	/**
+	 * Save plugin settings from the Import / Export page.
+	 */
+	public function handle_settings_save() {
+		if ( ! isset( $_POST['pcip_settings_nonce'] )
+			|| ! wp_verify_nonce( $_POST['pcip_settings_nonce'], 'pcip_save_settings' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$delete_on_uninstall = ! empty( $_POST['pcip_delete_data_on_uninstall'] );
+		update_option( 'pcip_prep_delete_data_on_uninstall', $delete_on_uninstall );
+
+		add_settings_error( 'pcip_settings', 'settings_saved', __( 'Settings saved.', 'pcip-prep' ), 'success' );
 	}
 
 	/**

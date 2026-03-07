@@ -1,5 +1,6 @@
 /* ==========================================================================
-   PCIP Prep - Dashboard Styles
+   PCIP Prep - Dashboard Styles (Theme-Aware)
+   Inherits --pcip-* tokens defined in quiz.css.
    ========================================================================== */
 
 /* ---------- Overview Cards ---------- */
@@ -16,20 +17,20 @@
 	align-items: center;
 	gap: 4px;
 	padding: 20px;
-	background: #fff;
-	border: 2px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 8px;
 }
 
 .pcip-dash-stat-value {
 	font-size: 28px;
 	font-weight: 700;
-	color: #0073aa;
+	color: var(--pcip-accent);
 }
 
 .pcip-dash-stat-label {
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 	font-weight: 500;
 	text-align: center;
 }
@@ -51,8 +52,8 @@
 }
 
 .pcip-dash-bar-item {
-	background: #fff;
-	border: 1px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 1px solid var(--pcip-border);
 	border-radius: 8px;
 	padding: 12px 16px;
 }
@@ -68,13 +69,13 @@
 
 .pcip-dash-bar-detail {
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 	font-weight: 400;
 }
 
 .pcip-dash-bar-track {
 	height: 8px;
-	background: #f0f0f0;
+	background: var(--pcip-border);
 	border-radius: 4px;
 	overflow: hidden;
 }
@@ -86,11 +87,11 @@
 }
 
 .pcip-bar-pass {
-	background: #00a32a;
+	background: var(--pcip-success);
 }
 
 .pcip-bar-fail {
-	background: #d63638;
+	background: var(--pcip-error);
 }
 
 /* ---------- Weak Areas ---------- */
@@ -103,37 +104,37 @@
 .pcip-dash-weak-item {
 	display: inline-block;
 	padding: 6px 14px;
-	background: #fff8f0;
-	border: 1px solid #f0d0a0;
+	background: var(--pcip-warning-bg);
+	border: 1px solid var(--pcip-warning-border);
 	border-radius: 20px;
 	font-size: 14px;
-	color: #8a6d3b;
+	color: var(--pcip-warning-text);
 }
 
 /* ---------- History Tables ---------- */
 .pcip-dash-history-table {
 	width: 100%;
 	border-collapse: collapse;
-	background: #fff;
+	background: var(--pcip-surface);
 	border-radius: 8px;
 	overflow: hidden;
-	border: 1px solid #e0e0e0;
+	border: 1px solid var(--pcip-border);
 }
 
 .pcip-dash-history-table th,
 .pcip-dash-history-table td {
 	padding: 10px 14px;
 	text-align: left;
-	border-bottom: 1px solid #f0f0f0;
+	border-bottom: 1px solid var(--pcip-border);
 }
 
 .pcip-dash-history-table th {
 	font-weight: 600;
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
-	background: #fafafa;
+	background: var(--pcip-surface-active);
 }
 
 .pcip-dash-history-table td {

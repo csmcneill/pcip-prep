@@ -2,20 +2,27 @@
 /**
  * PCIP Prep uninstall script.
  *
- * Removes all plugin data: posts, meta, taxonomy terms, custom tables, and options.
+ * Only removes data if the user has explicitly opted in via the
+ * "Delete all data on uninstall" setting. This prevents data loss
+ * when updating the plugin through a delete-and-reinstall cycle.
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+// Bail unless the user has explicitly opted in to data removal.
+if ( ! get_option( 'pcip_prep_delete_data_on_uninstall', false ) ) {
+	return;
+}
+
 global $wpdb;
 
-// Delete all pcip_question posts.
+// Delete all pcip_question posts and orphaned meta.
 $wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type = 'pcip_question'" );
 $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id NOT IN (SELECT ID FROM {$wpdb->posts})" );
 
-// Delete all pcip_issue_report posts.
+// Delete all pcip_issue_report posts and orphaned meta.
 $wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type = 'pcip_issue_report'" );
 $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE post_id NOT IN (SELECT ID FROM {$wpdb->posts})" );
 
@@ -36,8 +43,9 @@ if ( ! is_wp_error( $terms ) ) {
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pcip_prep_results" );
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pcip_prep_sessions" );
 
-// Clean up options.
+// Clean up all options.
 delete_option( 'pcip_prep_db_version' );
+delete_option( 'pcip_prep_delete_data_on_uninstall' );
 
-// Clean up user meta for active sessions.
+// Clean up user meta.
 $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '_pcip_%'" );

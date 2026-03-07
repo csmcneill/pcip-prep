@@ -1,14 +1,54 @@
 /* ==========================================================================
-   PCIP Prep - Frontend Styles
+   PCIP Prep - Frontend Styles (Theme-Aware)
+   Uses WordPress block theme custom properties so the plugin inherits the
+   active theme's colors, fonts, and spacing automatically.
    ========================================================================== */
+
+/* ---------- Theme Tokens ---------- */
+.pcip-container {
+	--pcip-bg:             var(--wp--preset--color--base, #fff);
+	--pcip-text:           var(--wp--preset--color--contrast, #1e1e1e);
+	--pcip-accent:         var(--wp--preset--color--primary, #0073aa);
+
+	/* Derived surfaces and borders via color-mix */
+	--pcip-surface:        color-mix(in srgb, var(--pcip-text) 6%, var(--pcip-bg));
+	--pcip-surface-hover:  color-mix(in srgb, var(--pcip-text) 10%, var(--pcip-bg));
+	--pcip-surface-active: color-mix(in srgb, var(--pcip-text) 14%, var(--pcip-bg));
+	--pcip-border:         color-mix(in srgb, var(--pcip-text) 15%, var(--pcip-bg));
+	--pcip-border-strong:  color-mix(in srgb, var(--pcip-text) 25%, var(--pcip-bg));
+
+	/* Text hierarchy */
+	--pcip-muted:          color-mix(in srgb, var(--pcip-text) 55%, var(--pcip-bg));
+	--pcip-faint:          color-mix(in srgb, var(--pcip-text) 38%, var(--pcip-bg));
+
+	/* Accent variations */
+	--pcip-accent-hover:   color-mix(in srgb, var(--pcip-accent) 80%, var(--pcip-text));
+	--pcip-accent-subtle:  color-mix(in srgb, var(--pcip-accent) 12%, var(--pcip-bg));
+	--pcip-accent-shadow:  color-mix(in srgb, var(--pcip-accent) 15%, transparent);
+
+	/* Semantic colors */
+	--pcip-success:        #00a32a;
+	--pcip-error:          #d63638;
+	--pcip-success-bg:     color-mix(in srgb, var(--pcip-success) 12%, var(--pcip-bg));
+	--pcip-success-border: color-mix(in srgb, var(--pcip-success) 30%, var(--pcip-bg));
+	--pcip-error-bg:       color-mix(in srgb, var(--pcip-error) 12%, var(--pcip-bg));
+	--pcip-error-border:   color-mix(in srgb, var(--pcip-error) 30%, var(--pcip-bg));
+	--pcip-warning-bg:     color-mix(in srgb, #ffb900 15%, var(--pcip-bg));
+	--pcip-warning-border: color-mix(in srgb, #ffb900 35%, var(--pcip-bg));
+	--pcip-warning-text:   color-mix(in srgb, #ffb900 75%, var(--pcip-text));
+
+	/* Info (accent-tinted) */
+	--pcip-info-bg:        color-mix(in srgb, var(--pcip-accent) 10%, var(--pcip-bg));
+	--pcip-info-border:    color-mix(in srgb, var(--pcip-accent) 25%, var(--pcip-bg));
+}
 
 /* ---------- Reset & Container ---------- */
 .pcip-container {
 	max-width: 900px;
 	margin: 0 auto;
 	padding: 20px;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-	color: #1e1e1e;
+	font-family: inherit;
+	color: var(--pcip-text);
 	line-height: 1.6;
 }
 
@@ -28,7 +68,7 @@
 }
 
 .pcip-subtitle {
-	color: #606060;
+	color: var(--pcip-muted);
 	margin-bottom: 24px;
 }
 
@@ -41,7 +81,7 @@
 
 .pcip-login-prompt p {
 	font-size: 17px;
-	color: #404040;
+	color: var(--pcip-muted);
 	margin: 0 0 20px;
 }
 
@@ -53,6 +93,7 @@
 	padding: 10px 20px;
 	border: none;
 	border-radius: 6px;
+	font-family: inherit;
 	font-size: 15px;
 	font-weight: 500;
 	cursor: pointer;
@@ -66,32 +107,32 @@
 }
 
 .pcip-btn-primary {
-	background: #0073aa;
-	color: #fff;
+	background: var(--pcip-accent);
+	color: var(--pcip-bg);
 }
 .pcip-btn-primary:hover:not(:disabled) {
-	background: #005d8c;
+	background: var(--pcip-accent-hover);
 }
 
 .pcip-btn-secondary {
-	background: #f0f0f0;
-	color: #1e1e1e;
+	background: var(--pcip-surface-active);
+	color: var(--pcip-text);
 }
 .pcip-btn-secondary:hover:not(:disabled) {
-	background: #e0e0e0;
+	background: var(--pcip-border);
 }
 
 .pcip-btn-accent {
-	background: #d63638;
+	background: var(--pcip-error);
 	color: #fff;
 }
 .pcip-btn-accent:hover:not(:disabled) {
-	background: #b32d2e;
+	background: color-mix(in srgb, var(--pcip-error) 80%, black);
 }
 
 .pcip-btn-link {
 	background: none;
-	color: #0073aa;
+	color: var(--pcip-accent);
 	padding: 10px 8px;
 	font-size: 13px;
 }
@@ -122,24 +163,27 @@
 	align-items: flex-start;
 	gap: 4px;
 	padding: 20px;
-	background: #fff;
-	border: 2px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.15s ease;
 	text-align: left;
 	width: 100%;
+	color: var(--pcip-text);
+	font-family: inherit;
+	font-size: inherit;
 }
 
 .pcip-domain-card:hover {
-	border-color: #0073aa;
-	box-shadow: 0 2px 8px rgba(0, 115, 170, 0.12);
+	border-color: var(--pcip-accent);
+	box-shadow: 0 2px 8px var(--pcip-accent-shadow);
 }
 
 .pcip-domain-number {
 	font-size: 28px;
 	font-weight: 700;
-	color: #0073aa;
+	color: var(--pcip-accent);
 }
 
 .pcip-domain-name {
@@ -149,12 +193,12 @@
 
 .pcip-domain-count {
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 }
 
 .pcip-domain-expand-hint {
 	font-size: 12px;
-	color: #999;
+	color: var(--pcip-faint);
 }
 
 /* Requirements sub-grid */
@@ -172,22 +216,25 @@
 	align-items: center;
 	gap: 2px;
 	padding: 12px;
-	background: #f7f9fc;
-	border: 2px solid #d0d5dd;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 6px;
 	cursor: pointer;
 	transition: all 0.15s ease;
+	color: var(--pcip-text);
+	font-family: inherit;
+	font-size: inherit;
 }
 
 .pcip-req-card:hover {
-	border-color: #0073aa;
-	background: #eef5fa;
+	border-color: var(--pcip-accent);
+	background: var(--pcip-accent-subtle);
 }
 
 .pcip-req-number {
 	font-size: 20px;
 	font-weight: 700;
-	color: #0073aa;
+	color: var(--pcip-accent);
 }
 
 .pcip-req-name {
@@ -196,16 +243,16 @@
 }
 
 .pcip-req-all {
-	background: #0073aa;
-	border-color: #0073aa;
-	color: #fff;
+	background: var(--pcip-accent);
+	border-color: var(--pcip-accent);
+	color: var(--pcip-bg);
 }
 .pcip-req-all:hover {
-	background: #005d8c;
+	background: var(--pcip-accent-hover);
 }
 .pcip-req-all .pcip-req-name,
 .pcip-req-all .pcip-domain-count {
-	color: #fff;
+	color: var(--pcip-bg);
 }
 
 /* ---------- Quiz Length Options ---------- */
@@ -231,13 +278,13 @@
 
 .pcip-counter {
 	font-size: 14px;
-	color: #757575;
+	color: var(--pcip-muted);
 	font-weight: 500;
 }
 
 .pcip-flashcard {
-	background: #fff;
-	border: 2px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 12px;
 	padding: 32px;
 	min-height: 200px;
@@ -252,20 +299,20 @@
 .pcip-reference {
 	display: block;
 	font-size: 13px;
-	color: #999;
+	color: var(--pcip-faint);
 	margin-bottom: 16px;
 }
 
 .pcip-fc-answer {
 	margin-top: 16px;
 	padding-top: 16px;
-	border-top: 2px solid #0073aa;
+	border-top: 2px solid var(--pcip-accent);
 }
 
 .pcip-fc-answer p {
 	font-size: 16px;
 	line-height: 1.6;
-	color: #1a4f6e;
+	color: var(--pcip-accent);
 	margin: 0;
 }
 
@@ -283,7 +330,7 @@
 
 .pcip-progress-bar {
 	height: 6px;
-	background: #e0e0e0;
+	background: var(--pcip-border);
 	border-radius: 3px;
 	margin-top: 8px;
 	overflow: hidden;
@@ -291,14 +338,14 @@
 
 .pcip-progress-fill {
 	height: 100%;
-	background: #0073aa;
+	background: var(--pcip-accent);
 	border-radius: 3px;
 	transition: width 0.3s ease;
 }
 
 .pcip-question-card {
-	background: #fff;
-	border: 2px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 12px;
 	padding: 28px;
 }
@@ -322,20 +369,21 @@
 	align-items: flex-start;
 	gap: 12px;
 	padding: 14px 16px;
-	border: 2px solid #e0e0e0;
+	border: 2px solid var(--pcip-border);
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.15s ease;
 }
 
 .pcip-option-label:hover {
-	border-color: #0073aa;
-	background: #f7f9fc;
+	border-color: var(--pcip-accent);
+	background: var(--pcip-accent-subtle);
 }
 
 .pcip-option-label input[type="radio"] {
 	margin-top: 3px;
 	flex-shrink: 0;
+	accent-color: var(--pcip-accent);
 }
 
 .pcip-option-text {
@@ -344,20 +392,20 @@
 }
 
 .pcip-option-correct {
-	border-color: #00a32a !important;
-	background: #edfaef !important;
+	border-color: var(--pcip-success) !important;
+	background: var(--pcip-success-bg) !important;
 }
 
 .pcip-option-incorrect {
-	border-color: #d63638 !important;
-	background: #fceaea !important;
+	border-color: var(--pcip-error) !important;
+	background: var(--pcip-error-bg) !important;
 }
 
 /* ---------- Feedback ---------- */
 .pcip-feedback {
 	margin-top: 20px;
 	padding-top: 20px;
-	border-top: 2px solid #e0e0e0;
+	border-top: 2px solid var(--pcip-border);
 }
 
 .pcip-feedback-result {
@@ -367,16 +415,16 @@
 }
 
 .pcip-correct {
-	color: #00a32a;
+	color: var(--pcip-success);
 }
 
 .pcip-incorrect {
-	color: #d63638;
+	color: var(--pcip-error);
 }
 
 .pcip-explanation {
 	font-size: 15px;
-	color: #404040;
+	color: var(--pcip-muted);
 	line-height: 1.6;
 	margin-bottom: 16px;
 }
@@ -404,16 +452,16 @@
 	width: 120px;
 	height: 120px;
 	border-radius: 50%;
-	border: 6px solid #e0e0e0;
+	border: 6px solid var(--pcip-border);
 	margin-bottom: 12px;
 }
 
 .pcip-score-pass {
-	border-color: #00a32a;
+	border-color: var(--pcip-success);
 }
 
 .pcip-score-fail {
-	border-color: #d63638;
+	border-color: var(--pcip-error);
 }
 
 .pcip-score-percent {
@@ -422,21 +470,21 @@
 }
 
 .pcip-score-pass .pcip-score-percent {
-	color: #00a32a;
+	color: var(--pcip-success);
 }
 
 .pcip-score-fail .pcip-score-percent {
-	color: #d63638;
+	color: var(--pcip-error);
 }
 
 .pcip-score-detail {
 	font-size: 16px;
-	color: #606060;
+	color: var(--pcip-muted);
 }
 
 .pcip-time-spent {
 	font-size: 14px;
-	color: #999;
+	color: var(--pcip-faint);
 }
 
 .pcip-results-actions {
@@ -465,35 +513,35 @@
 	flex-direction: column;
 	gap: 4px;
 	padding: 16px;
-	background: #f7f9fc;
+	background: var(--pcip-surface);
 	border-radius: 8px;
 }
 
 .pcip-detail-label {
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 	font-weight: 500;
 }
 
 .pcip-detail-value {
 	font-size: 22px;
 	font-weight: 700;
-	color: #0073aa;
+	color: var(--pcip-accent);
 }
 
 .pcip-exam-notice {
 	padding: 16px;
-	background: #f0f6fc;
-	border: 1px solid #c3d9ed;
+	background: var(--pcip-info-bg);
+	border: 1px solid var(--pcip-info-border);
 	border-radius: 8px;
 	margin-bottom: 24px;
 	text-align: left;
 }
 
 .pcip-notice-warning {
-	background: #fcf0e3;
-	border-color: #e0b878;
-	color: #8a6d3b;
+	background: var(--pcip-warning-bg);
+	border-color: var(--pcip-warning-border);
+	color: var(--pcip-warning-text);
 }
 
 /* ---------- Exam Interface ---------- */
@@ -512,8 +560,8 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 12px 16px;
-	background: #1e1e1e;
-	color: #fff;
+	background: var(--pcip-text);
+	color: var(--pcip-bg);
 	border-radius: 8px;
 	margin-bottom: 20px;
 	position: sticky;
@@ -528,7 +576,7 @@
 }
 
 .pcip-timer-warning {
-	color: #ff6b6b;
+	color: var(--pcip-error);
 	animation: pciPulse 1s ease-in-out infinite;
 }
 
@@ -538,8 +586,8 @@
 }
 
 .pcip-exam-question-area {
-	background: #fff;
-	border: 2px solid #e0e0e0;
+	background: var(--pcip-surface);
+	border: 2px solid var(--pcip-border);
 	border-radius: 12px;
 	padding: 28px;
 	margin-bottom: 16px;
@@ -551,7 +599,7 @@
 	gap: 12px;
 	margin-top: 16px;
 	padding-top: 16px;
-	border-top: 1px solid #e0e0e0;
+	border-top: 1px solid var(--pcip-border);
 }
 
 .pcip-flag-btn {
@@ -563,9 +611,9 @@
 }
 
 .pcip-flagged {
-	background: #fff3cd;
-	border-color: #e0b878;
-	color: #8a6d3b;
+	background: var(--pcip-warning-bg);
+	border-color: var(--pcip-warning-border);
+	color: var(--pcip-warning-text);
 }
 
 .pcip-exam-nav {
@@ -601,27 +649,29 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 2px solid #d0d5dd;
+	border: 2px solid var(--pcip-border);
 	border-radius: 6px;
-	background: #fff;
+	background: var(--pcip-surface);
+	font-family: inherit;
 	font-size: 13px;
 	font-weight: 500;
+	color: var(--pcip-text);
 	cursor: pointer;
 	transition: all 0.1s ease;
 }
 
 .pcip-grid-btn:hover {
-	border-color: #0073aa;
+	border-color: var(--pcip-accent);
 }
 
 .pcip-grid-current {
-	border-color: #0073aa;
-	box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.25);
+	border-color: var(--pcip-accent);
+	box-shadow: 0 0 0 2px var(--pcip-accent-shadow);
 }
 
 .pcip-grid-answered {
-	background: #00a32a;
-	border-color: #00a32a;
+	background: var(--pcip-success);
+	border-color: var(--pcip-success);
 	color: #fff;
 }
 
@@ -637,7 +687,7 @@
 	gap: 10px;
 	margin-top: 12px;
 	font-size: 12px;
-	color: #757575;
+	color: var(--pcip-muted);
 }
 
 .pcip-legend-item {
@@ -650,12 +700,12 @@
 	width: 12px;
 	height: 12px;
 	border-radius: 3px;
-	border: 1px solid #d0d5dd;
+	border: 1px solid var(--pcip-border);
 }
 
-.pcip-status-answered { background: #00a32a; border-color: #00a32a; }
+.pcip-status-answered { background: var(--pcip-success); border-color: var(--pcip-success); }
 .pcip-status-flagged  { background: #ffb900; border-color: #e0a800; }
-.pcip-status-unanswered { background: #fff; }
+.pcip-status-unanswered { background: var(--pcip-surface); }
 
 .pcip-exam-sidebar-toggle-btn {
 	display: none;
@@ -689,7 +739,7 @@
 
 .pcip-review-stat-label {
 	font-size: 14px;
-	color: #757575;
+	color: var(--pcip-muted);
 }
 
 .pcip-review-grid {
@@ -711,13 +761,13 @@
 }
 
 .pcip-result-pass {
-	background: #edfaef;
-	color: #00a32a;
+	background: var(--pcip-success-bg);
+	color: var(--pcip-success);
 }
 
 .pcip-result-fail {
-	background: #fceaea;
-	color: #d63638;
+	background: var(--pcip-error-bg);
+	color: var(--pcip-error);
 }
 
 .pcip-result-banner h2 {
@@ -742,24 +792,24 @@
 .pcip-breakdown-table th,
 .pcip-breakdown-table td {
 	padding: 10px 14px;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--pcip-border);
 	text-align: left;
 }
 
 .pcip-breakdown-table th {
 	font-weight: 600;
 	font-size: 13px;
-	color: #757575;
+	color: var(--pcip-muted);
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
 }
 
 .pcip-row-weak {
-	background: #fff8f0;
+	background: var(--pcip-warning-bg);
 }
 
 .pcip-row-weak td:last-child {
-	color: #d63638;
+	color: var(--pcip-error);
 	font-weight: 600;
 }
 
@@ -771,17 +821,17 @@
 
 .pcip-answer-review-item {
 	padding: 16px;
-	border: 1px solid #e0e0e0;
+	border: 1px solid var(--pcip-border);
 	border-radius: 8px;
 	margin-bottom: 12px;
 }
 
 .pcip-review-correct {
-	border-left: 4px solid #00a32a;
+	border-left: 4px solid var(--pcip-success);
 }
 
 .pcip-review-incorrect {
-	border-left: 4px solid #d63638;
+	border-left: 4px solid var(--pcip-error);
 }
 
 .pcip-review-q {
@@ -793,13 +843,13 @@
 	margin: 4px 0;
 	padding-left: 16px;
 	font-size: 14px;
-	color: #404040;
+	color: var(--pcip-muted);
 }
 
 .pcip-review-explanation {
 	margin-top: 8px;
 	font-size: 14px;
-	color: #606060;
+	color: var(--pcip-muted);
 }
 
 /* ---------- Modal ---------- */
@@ -821,16 +871,17 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.5);
+	background: color-mix(in srgb, var(--pcip-text) 50%, transparent);
 }
 
 .pcip-modal-content {
 	position: relative;
-	background: #fff;
+	background: var(--pcip-bg);
+	border: 1px solid var(--pcip-border);
 	border-radius: 12px;
 	width: 90%;
 	max-width: 500px;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 8px 32px color-mix(in srgb, var(--pcip-text) 20%, transparent);
 }
 
 .pcip-modal-header {
@@ -838,7 +889,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 16px 20px;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--pcip-border);
 }
 
 .pcip-modal-header h3 {
@@ -850,7 +901,7 @@
 	border: none;
 	font-size: 24px;
 	cursor: pointer;
-	color: #757575;
+	color: var(--pcip-muted);
 	padding: 0;
 	line-height: 1;
 }
@@ -873,11 +924,13 @@
 .pcip-form-field textarea {
 	width: 100%;
 	padding: 10px;
-	border: 1px solid #d0d5dd;
+	border: 1px solid var(--pcip-border);
 	border-radius: 6px;
 	font-family: inherit;
 	font-size: 14px;
 	resize: vertical;
+	background: var(--pcip-surface);
+	color: var(--pcip-text);
 }
 
 .pcip-modal-footer {
@@ -888,7 +941,7 @@
 }
 
 .pcip-success-message {
-	color: #00a32a;
+	color: var(--pcip-success);
 	font-weight: 500;
 	text-align: center;
 	margin-bottom: 16px;
@@ -898,13 +951,13 @@
 .pcip-empty-state {
 	text-align: center;
 	padding: 40px 20px;
-	color: #757575;
+	color: var(--pcip-muted);
 }
 
 .pcip-loading {
 	text-align: center;
 	padding: 40px 20px;
-	color: #757575;
+	color: var(--pcip-muted);
 }
 
 /* ---------- Status Badges ---------- */
@@ -919,13 +972,13 @@
 }
 
 .pcip-status-pass {
-	background: #edfaef;
-	color: #00a32a;
+	background: var(--pcip-success-bg);
+	color: var(--pcip-success);
 }
 
 .pcip-status-fail {
-	background: #fceaea;
-	color: #d63638;
+	background: var(--pcip-error-bg);
+	color: var(--pcip-error);
 }
 
 /* ---------- Responsive ---------- */
