@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PCI Professional Preparation Plugin
  * Description: PCIP certification prep tool (P4) with flashcards, multiple-choice quizzes, and a full exam simulator.
- * Version:     1.2.0
+ * Version:     1.3.0
  * Author:      Chris McNeill
  * Author URI:  https://csmcneill.com
  * Text Domain: pcip-prep
