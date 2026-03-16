@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PCIP_PREP_VERSION', '1.2.0' );
+define( 'PCIP_PREP_VERSION', '1.3.2' );
 define( 'PCIP_PREP_PLUGIN_FILE', __FILE__ );
 define( 'PCIP_PREP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PCIP_PREP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
