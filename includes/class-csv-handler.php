@@ -39,6 +39,10 @@ class PCIP_Prep_CSV_Handler {
 	}
 
 	private static function import( $file_path, $type, $expected_columns ) {
+		// Ensure domain/requirement terms exist before import — they may
+		// be missing if activation didn't fire cleanly.
+		PCIP_Prep_Post_Types::populate_default_terms();
+
 		$result = array(
 			'created' => 0,
 			'updated' => 0,
