@@ -153,7 +153,7 @@ True or false: If a TPSP fails to meet PCI DSS requirements those requirements a
 How often must the incident response plan be reviewed?,Every 12 months,3,12,PCI DSS v4.0.1 Req 12.10
 Must incident response personnel be available 24/7?,Yes,3,12,PCI DSS v4.0.1 Req 12.10
 How often must service provider executive management review PCI compliance?,Every 3 months,3,12,PCI DSS v4.0.1 Req 12.4
-How often must DESV entities confirm scope?,Every 3 months,3,,PCI DSS v4.0.1 Appendix A3
+How often must DESV entities confirm scope?,Every 3 months,4,,PCI DSS v4.0.1 Appendix A3
 What does ROC stand for?,Report on Compliance,4,,PCI DSS v4.0.1 ROC Template
 What does ROV stand for?,Report on Validation,4,,PCI Standards Overview
 What is the difference between a ROC and an ROV?,ROC compares an organization to a standard; ROV compares a product/service to a standard,4,,PCI Standards Overview
