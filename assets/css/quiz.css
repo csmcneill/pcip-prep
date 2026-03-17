@@ -42,8 +42,25 @@
 	--pcip-info-border:    color-mix(in srgb, var(--pcip-accent) 25%, var(--pcip-bg));
 }
 
+/* ---------- Dark Theme Support ----------
+   When the OS reports dark mode, override the three root tokens with
+   dark-friendly values.  Every derived color (surfaces, borders, muted
+   text, semantic tints) flows from these via color-mix(), so nothing
+   else needs to change.
+   ---------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+	.pcip-container {
+		--pcip-bg:      #161622;
+		--pcip-text:    #e0e0e8;
+		--pcip-accent:  #5eead4;
+		--pcip-success: #22c55e;
+		--pcip-error:   #ef4444;
+	}
+}
+
 /* ---------- Reset & Container ---------- */
 .pcip-container {
+	color-scheme: light dark;
 	max-width: 900px;
 	margin: 0 auto;
 	padding: 20px;
