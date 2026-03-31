@@ -141,8 +141,10 @@ class PCIP_Prep_Database {
 	// ------------------------------------------------------------------
 
 	/**
-	 * Get the best-scoring quiz session ID for each domain.
-	 * Ties broken by most recent completion date.
+	 * Get the best quiz session ID for each domain.
+	 *
+	 * "Best" = most correct answers (favors comprehensive quizzes over
+	 * short perfect ones), then highest score %, then most recent.
 	 *
 	 * @return array<string, string> Domain slug => session_id.
 	 */
@@ -151,24 +153,19 @@ class PCIP_Prep_Database {
 		$table = self::sessions_table();
 
 		$rows = $wpdb->get_results( $wpdb->prepare(
-			"SELECT s.domain, s.session_id
-			 FROM {$table} s
-			 INNER JOIN (
-				 SELECT domain, MAX(score_percent) AS max_score
-				 FROM {$table}
-				 WHERE user_id = %d AND quiz_type = 'domain' AND domain IS NOT NULL
-				 GROUP BY domain
-			 ) best ON s.domain = best.domain AND s.score_percent = best.max_score
-			 WHERE s.user_id = %d AND s.quiz_type = 'domain'
-			 GROUP BY s.domain
-			 ORDER BY s.domain",
-			$user_id,
+			"SELECT domain, session_id
+			 FROM {$table}
+			 WHERE user_id = %d AND quiz_type = 'domain' AND domain IS NOT NULL
+			 ORDER BY domain, correct_answers DESC, score_percent DESC, completed_at DESC",
 			$user_id
 		) );
 
+		// First row per domain wins (already sorted by best).
 		$ids = array();
 		foreach ( $rows as $row ) {
-			$ids[ $row->domain ] = $row->session_id;
+			if ( ! isset( $ids[ $row->domain ] ) ) {
+				$ids[ $row->domain ] = $row->session_id;
+			}
 		}
 		return $ids;
 	}
