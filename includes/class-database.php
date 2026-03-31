@@ -174,7 +174,8 @@ class PCIP_Prep_Database {
 	 * Get a user's overall stats.
 	 *
 	 * Activity metrics (quizzes taken, questions answered) are cumulative.
-	 * Accuracy is derived from each domain's best quiz session.
+	 * Accuracy is derived from the domain stats (which use best-session
+	 * per domain and composite per-requirement bests for Domain 3).
 	 */
 	public static function get_user_stats( $user_id ) {
 		global $wpdb;
@@ -206,21 +207,19 @@ class PCIP_Prep_Database {
 			$user_id
 		) );
 
-		// Best-session accuracy: use only each domain's best quiz.
-		$accuracy = 0;
-		$best_sessions = self::get_best_domain_session_ids( $user_id );
-		if ( ! empty( $best_sessions ) ) {
-			$session_ids   = array_values( $best_sessions );
-			$placeholders  = implode( ',', array_fill( 0, count( $session_ids ), '%s' ) );
-			$best_totals   = $wpdb->get_row( $wpdb->prepare(
-				"SELECT COUNT(*) AS total_answered,
-						SUM(is_correct) AS total_correct
-				 FROM {$results_table}
-				 WHERE user_id = %d AND quiz_session_id IN ({$placeholders})",
-				array_merge( array( $user_id ), $session_ids )
-			) );
-			if ( $best_totals && $best_totals->total_answered > 0 ) {
-				$accuracy = round( ( $best_totals->total_correct / $best_totals->total_answered ) * 100, 1 );
+		// Derive overall accuracy from domain stats so it stays
+		// consistent with the domain bars (including composite Domain 3).
+		$accuracy     = 0;
+		$domain_stats = self::get_user_domain_stats( $user_id );
+		if ( ! empty( $domain_stats ) ) {
+			$best_total   = 0;
+			$best_correct = 0;
+			foreach ( $domain_stats as $ds ) {
+				$best_total   += $ds['total'];
+				$best_correct += $ds['correct'];
+			}
+			if ( $best_total > 0 ) {
+				$accuracy = round( ( $best_correct / $best_total ) * 100, 1 );
 			}
 		}
 
@@ -236,7 +235,10 @@ class PCIP_Prep_Database {
 
 	/**
 	 * Get a user's performance broken down by domain.
-	 * Uses each domain's best quiz session.
+	 *
+	 * Most domains use their single best quiz session. Domain 3 is a
+	 * composite: each requirement's best result is summed so the domain
+	 * bar stays consistent with the per-requirement breakdown.
 	 */
 	public static function get_user_domain_stats( $user_id ) {
 		global $wpdb;
@@ -269,6 +271,26 @@ class PCIP_Prep_Database {
 				'accuracy' => round( ( $row->correct / $row->total ) * 100, 1 ),
 			);
 		}
+
+		// Domain 3: override with composite of per-requirement bests
+		// so the domain bar matches the requirement breakdown.
+		$req_stats = self::get_user_requirement_stats( $user_id );
+		if ( ! empty( $req_stats ) ) {
+			$total   = 0;
+			$correct = 0;
+			foreach ( $req_stats as $req ) {
+				$total   += $req['total'];
+				$correct += $req['correct'];
+			}
+			if ( $total > 0 ) {
+				$stats['domain-3'] = array(
+					'total'    => $total,
+					'correct'  => $correct,
+					'accuracy' => round( ( $correct / $total ) * 100, 1 ),
+				);
+			}
+		}
+
 		return $stats;
 	}
 
