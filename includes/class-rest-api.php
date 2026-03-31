@@ -80,6 +80,13 @@ class PCIP_Prep_REST_API {
 			'permission_callback' => array( $this, 'check_logged_in' ),
 		) );
 
+		// Clean up orphaned results from abandoned quizzes.
+		register_rest_route( self::NAMESPACE, '/cleanup-orphaned', array(
+			'methods'             => 'POST',
+			'callback'            => array( $this, 'cleanup_orphaned' ),
+			'permission_callback' => array( $this, 'check_logged_in' ),
+		) );
+
 		// Report an issue.
 		register_rest_route( self::NAMESPACE, '/report-issue', array(
 			'methods'             => 'POST',
@@ -256,23 +263,12 @@ class PCIP_Prep_REST_API {
 		$is_correct  = ( $selected_key === $key_data['correct_key'] );
 		$correct_key = $key_data['correct_key'];
 
-		// Record the result.
+		// Record the result in the session (persisted to DB on submit).
 		$session['results'][ $question_number ] = array(
 			'selected'   => $selected_key,
 			'is_correct' => $is_correct,
 		);
 		update_user_meta( $user_id, '_pcip_active_session', $session );
-
-		// Save to results table.
-		PCIP_Prep_Database::record_result( array(
-			'user_id'     => $user_id,
-			'session_id'  => $session_id,
-			'quiz_type'   => 'domain',
-			'question_id' => $key_data['question_id'],
-			'domain'      => $key_data['domain'],
-			'requirement' => $key_data['requirement'],
-			'is_correct'  => $is_correct ? 1 : 0,
-		) );
 
 		return rest_ensure_response( array(
 			'is_correct'  => $is_correct,
@@ -300,6 +296,22 @@ class PCIP_Prep_REST_API {
 
 		$score_percent = $total > 0 ? round( ( $correct / $total ) * 100, 1 ) : 0;
 		$time_spent    = time() - $session['started_at'];
+
+		// Record individual question results to the database.
+		foreach ( $session['answer_key'] as $q_num => $key_data ) {
+			if ( ! isset( $session['results'][ $q_num ] ) ) {
+				continue;
+			}
+			PCIP_Prep_Database::record_result( array(
+				'user_id'     => $user_id,
+				'session_id'  => $session_id,
+				'quiz_type'   => 'domain',
+				'question_id' => $key_data['question_id'],
+				'domain'      => $key_data['domain'],
+				'requirement' => $key_data['requirement'],
+				'is_correct'  => $session['results'][ $q_num ]['is_correct'] ? 1 : 0,
+			) );
+		}
 
 		PCIP_Prep_Database::record_session( array(
 			'session_id'       => $session_id,
@@ -586,6 +598,15 @@ class PCIP_Prep_REST_API {
 		return rest_ensure_response( array(
 			'success'   => true,
 			'report_id' => $post_id,
+		) );
+	}
+
+	public function cleanup_orphaned() {
+		$deleted = PCIP_Prep_Database::cleanup_orphaned_results();
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'deleted' => $deleted,
 		) );
 	}
 

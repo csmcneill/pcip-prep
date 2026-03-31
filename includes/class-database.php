@@ -158,7 +158,7 @@ class PCIP_Prep_Database {
 		) );
 
 		$quiz_count = $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) FROM {$sessions_table} WHERE user_id = %d",
+			"SELECT COUNT(*) FROM {$sessions_table} WHERE user_id = %d AND quiz_type = 'domain'",
 			$user_id
 		) );
 
@@ -334,5 +334,24 @@ class PCIP_Prep_Database {
 			);
 		}
 		return $stats;
+	}
+
+	/**
+	 * Delete orphaned results whose quiz_session_id has no matching session.
+	 * These accumulate when a user abandons a quiz before submitting.
+	 *
+	 * @return int Number of rows deleted.
+	 */
+	public static function cleanup_orphaned_results() {
+		global $wpdb;
+
+		$results_table  = self::results_table();
+		$sessions_table = self::sessions_table();
+
+		return (int) $wpdb->query(
+			"DELETE r FROM {$results_table} r
+			 LEFT JOIN {$sessions_table} s ON r.quiz_session_id = s.session_id
+			 WHERE s.session_id IS NULL"
+		);
 	}
 }
