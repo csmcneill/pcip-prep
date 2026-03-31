@@ -274,32 +274,34 @@ class PCIP_Prep_Database {
 
 	/**
 	 * Get a user's performance broken down by requirement (Domain 3 only).
-	 * Uses the best Domain 3 quiz session.
+	 *
+	 * Each requirement is evaluated independently: the session where the
+	 * user answered the most questions correctly for that requirement wins.
+	 * This means a focused Requirement 11 quiz can beat the Requirement 11
+	 * slice of a larger Domain 3 quiz.
 	 */
 	public static function get_user_requirement_stats( $user_id ) {
 		global $wpdb;
 		$table = self::results_table();
 
-		$best_sessions   = self::get_best_domain_session_ids( $user_id );
-		$domain3_session = $best_sessions['domain-3'] ?? null;
-		if ( ! $domain3_session ) {
-			return array();
-		}
-
+		// Get per-session, per-requirement breakdowns in one query.
 		$rows = $wpdb->get_results( $wpdb->prepare(
-			"SELECT requirement,
+			"SELECT quiz_session_id, requirement,
 					COUNT(*) AS total,
 					SUM(is_correct) AS correct
 			 FROM {$table}
-			 WHERE user_id = %d AND quiz_session_id = %s AND requirement IS NOT NULL
-			 GROUP BY requirement
-			 ORDER BY requirement",
-			$user_id,
-			$domain3_session
+			 WHERE user_id = %d AND requirement IS NOT NULL
+			 GROUP BY quiz_session_id, requirement
+			 ORDER BY requirement, correct DESC, total DESC",
+			$user_id
 		) );
 
+		// First row per requirement wins (most correct, then most questions).
 		$stats = array();
 		foreach ( $rows as $row ) {
+			if ( isset( $stats[ $row->requirement ] ) ) {
+				continue;
+			}
 			$stats[ $row->requirement ] = array(
 				'total'    => (int) $row->total,
 				'correct'  => (int) $row->correct,
