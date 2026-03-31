@@ -141,7 +141,43 @@ class PCIP_Prep_Database {
 	// ------------------------------------------------------------------
 
 	/**
+	 * Get the best-scoring quiz session ID for each domain.
+	 * Ties broken by most recent completion date.
+	 *
+	 * @return array<string, string> Domain slug => session_id.
+	 */
+	private static function get_best_domain_session_ids( $user_id ) {
+		global $wpdb;
+		$table = self::sessions_table();
+
+		$rows = $wpdb->get_results( $wpdb->prepare(
+			"SELECT s.domain, s.session_id
+			 FROM {$table} s
+			 INNER JOIN (
+				 SELECT domain, MAX(score_percent) AS max_score
+				 FROM {$table}
+				 WHERE user_id = %d AND quiz_type = 'domain' AND domain IS NOT NULL
+				 GROUP BY domain
+			 ) best ON s.domain = best.domain AND s.score_percent = best.max_score
+			 WHERE s.user_id = %d AND s.quiz_type = 'domain'
+			 GROUP BY s.domain
+			 ORDER BY s.domain",
+			$user_id,
+			$user_id
+		) );
+
+		$ids = array();
+		foreach ( $rows as $row ) {
+			$ids[ $row->domain ] = $row->session_id;
+		}
+		return $ids;
+	}
+
+	/**
 	 * Get a user's overall stats.
+	 *
+	 * Activity metrics (quizzes taken, questions answered) are cumulative.
+	 * Accuracy is derived from each domain's best quiz session.
 	 */
 	public static function get_user_stats( $user_id ) {
 		global $wpdb;
@@ -149,6 +185,7 @@ class PCIP_Prep_Database {
 		$results_table  = self::results_table();
 		$sessions_table = self::sessions_table();
 
+		// Cumulative activity counts.
 		$totals = $wpdb->get_row( $wpdb->prepare(
 			"SELECT COUNT(*) AS total_answered,
 					SUM(is_correct) AS total_correct
@@ -172,9 +209,23 @@ class PCIP_Prep_Database {
 			$user_id
 		) );
 
-		$accuracy = ( $totals && $totals->total_answered > 0 )
-			? round( ( $totals->total_correct / $totals->total_answered ) * 100, 1 )
-			: 0;
+		// Best-session accuracy: use only each domain's best quiz.
+		$accuracy = 0;
+		$best_sessions = self::get_best_domain_session_ids( $user_id );
+		if ( ! empty( $best_sessions ) ) {
+			$session_ids   = array_values( $best_sessions );
+			$placeholders  = implode( ',', array_fill( 0, count( $session_ids ), '%s' ) );
+			$best_totals   = $wpdb->get_row( $wpdb->prepare(
+				"SELECT COUNT(*) AS total_answered,
+						SUM(is_correct) AS total_correct
+				 FROM {$results_table}
+				 WHERE user_id = %d AND quiz_session_id IN ({$placeholders})",
+				array_merge( array( $user_id ), $session_ids )
+			) );
+			if ( $best_totals && $best_totals->total_answered > 0 ) {
+				$accuracy = round( ( $best_totals->total_correct / $best_totals->total_answered ) * 100, 1 );
+			}
+		}
 
 		return array(
 			'total_quizzes'    => (int) $quiz_count,
@@ -188,20 +239,29 @@ class PCIP_Prep_Database {
 
 	/**
 	 * Get a user's performance broken down by domain.
+	 * Uses each domain's best quiz session.
 	 */
 	public static function get_user_domain_stats( $user_id ) {
 		global $wpdb;
 		$table = self::results_table();
+
+		$best_sessions = self::get_best_domain_session_ids( $user_id );
+		if ( empty( $best_sessions ) ) {
+			return array();
+		}
+
+		$session_ids  = array_values( $best_sessions );
+		$placeholders = implode( ',', array_fill( 0, count( $session_ids ), '%s' ) );
 
 		$rows = $wpdb->get_results( $wpdb->prepare(
 			"SELECT domain,
 					COUNT(*) AS total,
 					SUM(is_correct) AS correct
 			 FROM {$table}
-			 WHERE user_id = %d
+			 WHERE user_id = %d AND quiz_session_id IN ({$placeholders})
 			 GROUP BY domain
 			 ORDER BY domain",
-			$user_id
+			array_merge( array( $user_id ), $session_ids )
 		) );
 
 		$stats = array();
@@ -217,20 +277,28 @@ class PCIP_Prep_Database {
 
 	/**
 	 * Get a user's performance broken down by requirement (Domain 3 only).
+	 * Uses the best Domain 3 quiz session.
 	 */
 	public static function get_user_requirement_stats( $user_id ) {
 		global $wpdb;
 		$table = self::results_table();
+
+		$best_sessions   = self::get_best_domain_session_ids( $user_id );
+		$domain3_session = $best_sessions['domain-3'] ?? null;
+		if ( ! $domain3_session ) {
+			return array();
+		}
 
 		$rows = $wpdb->get_results( $wpdb->prepare(
 			"SELECT requirement,
 					COUNT(*) AS total,
 					SUM(is_correct) AS correct
 			 FROM {$table}
-			 WHERE user_id = %d AND requirement IS NOT NULL
+			 WHERE user_id = %d AND quiz_session_id = %s AND requirement IS NOT NULL
 			 GROUP BY requirement
 			 ORDER BY requirement",
-			$user_id
+			$user_id,
+			$domain3_session
 		) );
 
 		$stats = array();
