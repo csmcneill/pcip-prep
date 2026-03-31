@@ -40,8 +40,34 @@ jobs:
       - name: Build plugin zip
         run: make build
 
+      - name: Extract release notes from commit
+        id: notes
+        run: |
+          # Use the tagged commit's subject line as the release name.
+          name=$(git log -1 --format='%s' "$GITHUB_REF")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+          # Use the commit body as the release description.
+          body=$(git log -1 --format='%b' "$GITHUB_REF")
+
+          # Find the previous tag for a compare link.
+          prev_tag=$(git describe --tags --abbrev=0 "$GITHUB_REF"^ 2>/dev/null || echo "")
+
+          {
+            echo "body<<RELEASE_BODY_EOF"
+            if [ -n "$body" ]; then
+              echo "$body"
+              echo ""
+            fi
+            if [ -n "$prev_tag" ]; then
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${prev_tag}...${GITHUB_REF_NAME}"
+            fi
+            echo "RELEASE_BODY_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          name: ${{ steps.notes.outputs.name }}
+          body: ${{ steps.notes.outputs.body }}
           files: dist/pcip-prep-${{ steps.version.outputs.version }}.zip
-          generate_release_notes: true
